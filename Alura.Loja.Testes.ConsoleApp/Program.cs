@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Infrastructure;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,36 @@ namespace Alura.Loja.Testes.ConsoleApp
     {
         static void Main(string[] args)
         {
-            UmParaUm();
+            using (var contexto = new LojaContext())
+            {
+                var promocao = new Promocao();
+                promocao.Descricao = "Queima Total Janeiro 2022";
+                promocao.DataInicio = new DateTime(2022, 1, 1);
+                promocao.DataTermino = new DateTime(2022, 1, 31);
+
+                var produtos = contexto.Produtos.Where(p => p.Categoria == "Bebidas").ToList();
+                foreach (var produto in produtos)
+                {
+                    promocao.IncluiProduto(produto);
+                }
+
+                contexto.Add(promocao);
+                contexto.SaveChanges();
+            }
+
+            using (var contexto = new LojaContext())
+            {
+                var promocao = contexto
+                    .Promocoes
+                    .Include(p => p.Produtos)
+                    .ThenInclude(pp => pp.Produto)
+                    .Last();
+                foreach (var produto in promocao.Produtos)
+                {
+                    Console.WriteLine(produto.Produto);
+                }
+                Console.ReadLine();
+            }
         }
         static void UmParaUm()
         {
