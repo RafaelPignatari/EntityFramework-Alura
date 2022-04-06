@@ -12,7 +12,50 @@ namespace Alura.Loja.Testes.ConsoleApp
     {
         static void Main(string[] args)
         {
-            var p1 = new Produto() { Nome = "Suco de Laranja", Categoria = "Bebidas", PrecoUnitario = 8.79, Unidade = "Litros"};
+            UmParaUm();
+        }
+        static void UmParaUm()
+        {
+            var fulano = new Cliente();
+            fulano.Nome = "Fulaninho";
+            fulano.EnderecoEntrega = new Endereco()
+            {
+                Numero = 12,
+                Logradouro = "Rua dos Inválidos",
+                Complemento = "sobrado",
+                Bairro = "Centro",
+                Cidade = "Cidade"
+            };
+
+            using (var contexto = new LojaContext())
+            {
+                contexto.Add(fulano);
+                contexto.SaveChanges();
+            }
+        }
+        static void UmParaMuitos()
+        {
+            var paoFrances = new Produto();
+            paoFrances.Nome = "Pão Francês";
+            paoFrances.PrecoUnitario = 0.40;
+            paoFrances.Unidade = "Unidade";
+            paoFrances.Categoria = "Padaria";
+
+            var compra = new Compra();
+            compra.Produto = paoFrances;
+            compra.Quantidade = 6;
+            compra.Preco = paoFrances.PrecoUnitario * compra.Quantidade;
+
+            //Note que adicionamos a compra e ela puxa o produto junto.
+            using (var contexto = new LojaContext())
+            {
+                contexto.Add(compra);
+                contexto.SaveChanges();
+            }
+        }
+        static void MuitosParaMuitos()
+        {
+            var p1 = new Produto() { Nome = "Suco de Laranja", Categoria = "Bebidas", PrecoUnitario = 8.79, Unidade = "Litros" };
             var p2 = new Produto() { Nome = "Café", Categoria = "Bebidas", PrecoUnitario = 12.45, Unidade = "Gramas" };
             var p3 = new Produto() { Nome = "Suco de Laranja", Categoria = "Alimentos", PrecoUnitario = 5, Unidade = "Litros" };
 
